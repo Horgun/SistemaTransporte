@@ -1,0 +1,37 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+    <ui:composition template="/resources/notallowed/template/layout.xhtml">
+        
+        <ui:define name="title">
+            Página Inicial
+        </ui:define>
+        
+        <ui:define name="content">
+            <style>
+                .buttonClass{
+                    cursor: pointer;
+                }
+                .buttonClass input:hover,.buttonClass input:active,.buttonClass input:focus {
+                    background: #43A047;
+                }
+            </style>
+            <div class="container">
+                <div class="row alert alert-primary">
+                    <div class="col-10  text-center">
+                        Bem vindo #{sessionBean.usuario.funcionario.nome}!
+                    </div>
+                    <div class="col-2 text-center">
+                        <h:form>
+                            <h:commandButton class="buttonClass btn btn-outline-dark btn-sm" value="Sair" action="#{indexController.logout()}"/>
+                        </h:form>
+                    </div>
+                </div>
+            </div>
+        </ui:define>
+    </ui:composition>
+</html>
+

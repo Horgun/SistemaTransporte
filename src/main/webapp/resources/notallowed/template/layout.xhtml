@@ -1,0 +1,146 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+    <link rel="stylesheet" href="/SistemaTransporte/resources/allowed/css/bootstrap.min.css"/>
+    <script src="/SistemaTransporte/resources/allowed/js/jquery-3.2.1.slim.min.js"></script>
+    <script src="/SistemaTransporte/resources/allowed/js/popper.min.js"></script>
+    <script src="/SistemaTransporte/resources/allowed/js/bootstrap.min.js"></script>
+    <style>
+        html, body {
+            margin: 0;
+            font-size: 20px;
+        }
+        .wrapper{
+            display: flex;
+            align-items: stretch;
+            height: 100%;
+        }
+        .left {
+            min-width: 10px;
+            max-width: 10px;
+            height: 100%;
+            position: fixed;
+            left: 0;
+            color: #ffffff;
+            /*outline: 1px solid;*/
+        }
+        .right {
+            width: 100%;
+            height: 100%;
+            /*outline: 1px solid;*/
+        }
+        #sidebar {
+            color: #ffffff;
+            min-width: 250px;
+            max-width: 250px;
+            height: 100%;
+            position: fixed;
+            display: none;
+            left: 0;
+            /* top layer */
+            z-index: 9999;
+        }
+        .overlay {
+            /* full screen */
+            width: 100vw;
+            height: 100vh;
+            /* transparent black */
+            background: rgba(0, 0, 0, 0.8);
+            position: fixed;
+            left: 0;
+            display: none;
+            /* middle layer, i.e. appears below the sidebar */
+            z-index: 9998;
+        }
+        #sidebar.active{
+            display: block;
+        }
+    </style>
+    <h:head>
+        <title>
+            <ui:insert name="title"/>
+        </title>
+    </h:head>
+    <h:body>
+        <p:button style="display: none;"/>
+        
+        <div>
+            <ui:insert name="navbar">
+                <ui:include src="/resources/notallowed/template/navbar.xhtml"/>
+            </ui:insert>
+        </div>
+        
+        <!--Divs pra dar padding -->
+        <div style="padding-top: 69.5px;" class="d-md-block"/>
+        <div style="padding-top: 49.5px;" class="d-sm-block d-md-none"/>
+        
+        <div class="wrapper">
+            <div id="leftDiv" class="left bg-dark d-none d-lg-block" />
+            
+            <div class="d-none d-lg-block" style="margin-right: 10px"/>
+
+            <nav id="sidebar" class="bg-dark">
+                <ui:insert name="sidemenu">
+                    <ui:include src="/resources/notallowed/template/sidemenu.xhtml"/>
+                </ui:insert>
+            </nav>
+
+            <div id="rightDiv" class="right">
+                <div class="ui-g">
+                    <div class="ui-g-12">
+                        <ui:insert name="content"/>
+                    </div>
+
+                    <div class="ui-g-12">
+                        <ui:insert name="footer">
+                            <ui:include src="/resources/notallowed/template/footer.xhtml"/>
+                        </ui:insert>
+                    </div>
+                </div>
+            </div>
+            <div id="overlayDiv" class="overlay"/>
+        </div>
+        <script>
+            $(document).ready(function() {
+                $('#leftDiv').hover(function() {
+                    $('#sidebar').addClass('active');
+                    // fade in the overlay
+                    $('.overlay').fadeIn();
+                    $('.collapse.in').toggleClass('in');
+                    $('a[aria-expanded=true]').attr('aria-expanded', 'false');
+                }, function(){
+                });
+                $('#sidebar').hover(function() {
+                }, function(){
+                    // hide the sidebar
+                    $('#sidebar').removeClass('active');
+                    // fade out the overlay
+                    $('.overlay').fadeOut();
+                });
+                
+                $('#overlayDiv').on('click', function() {
+                    var sidebar = $('#sidebar');
+                    if (sidebar.hasClass('active')){
+                        $('#sidebar').removeClass('active');
+                        $('.overlay').fadeOut();
+                    }
+                });
+            });
+            function showSideMenu(){
+                $(document).ready(function() {
+                    var sidebar = $('#sidebar');
+                    if (!sidebar.hasClass('active')){
+                        $('#sidebar').addClass('active');
+                        $('.overlay').fadeIn();
+                        $('.collapse.in').toggleClass('in');
+                        $('a[aria-expanded=true]').attr('aria-expanded', 'false');
+                    }
+                });
+            };
+        </script>
+    </h:body>
+</html>
+

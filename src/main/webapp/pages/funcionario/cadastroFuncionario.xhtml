@@ -1,0 +1,145 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <ui:composition template="/resources/notallowed/template/layout.xhtml">
+        
+        <ui:define name="title">Cadastro de funcionário</ui:define>
+        
+        <ui:define name="navbarTitle">Cadastro de funcionário</ui:define>
+        
+        <ui:define name="content">
+            <style>
+                .fontAdjust{
+                    font-size: 14px;
+                }
+                .adjustPadding{
+                    padding-top: 7.5px;
+                    padding-bottom: 7.5px;
+                    margin-bottom: 0px;
+                    display: block;
+                }
+                .adjustDropdown{
+                    margin-left: 15px;
+                    padding-left: 15px;
+                }
+                .divPadding{
+                    padding-bottom: 10px;
+                }
+                .buttonClass{
+                    cursor: pointer;
+                }
+                .buttonClass input:hover,.buttonClass input:active,.buttonClass input:focus {
+                    background: #43A047;
+                }
+            </style>
+            <div class="container">
+                <div class="row">
+                    <a class="col-12 btn btn-secondary text-center" data-toggle="collapse" 
+                       href="#dadosFuncionario" aria-expanded="false" aria-controls="dadosFuncionario">
+                        Editar usuário: #{cadastroFuncionarioController.funcionario.username == null ? "novo usuário":cadastroFuncionarioController.funcionario.username}
+                    </a>
+                    
+                </div>
+                <div id="dadosFuncionario" class="collapse">
+                    <h:form id="funcionarioForm">
+                        <div class="row bg-light" style="padding-top: 10px; padding-bottom: 10px;">
+                            <div class="col-md-4 divPadding">
+                                Id do usuário:
+                            </div>
+                            <div class="col-md-8 divPadding">
+                                #{cadastroFuncionarioController.funcionario.id == null ? "#" : cadastroFuncionarioController.funcionario.id}
+                            </div>
+
+                            <div class="col-md-4 divPadding">
+                                Nome de usuário:
+                            </div>
+                            <div class="col-md-4 divPadding">
+                                <h:inputText id="inputUsername" autocomplete="off" class="form-control fontAdjust" value="#{cadastroFuncionarioController.funcionario.username}" required="true" requiredMessage="Campo obrigatório!"/>
+                            </div>
+                            <div class="col-md-4 divPadding">
+                                <h:message id="m1" for="inputUsername" class="alert alert-danger fontAdjust adjustPadding"/>
+                            </div>
+                            
+                            <div class="col-md-4 divPadding">
+                                Senha:
+                            </div>
+                            <div class="col-md-4 divPadding">
+                                <h:inputSecret id="inputPassword" autocomplete="off" class="form-control fontAdjust" value="#{cadastroFuncionarioController.funcionario.password}" required="true" requiredMessage="Campo obrigatório!"/>
+                            </div>
+                            <div class="col-md-4 divPadding">
+                                <h:message id="m2" for="inputPassword" class="alert alert-danger fontAdjust adjustPadding"/>
+                            </div>
+
+                            <div class="col-md-4 divPadding">
+                                Funcionário:
+                            </div>
+                            <div class="col-md-4">
+                                <div class="input-group">
+                                    <h:inputText id="inputFuncionario" autocomplete="off" onkeyup="showDropdown()" class="form-control fontAdjust" value="#{cadastroFuncionarioController.nomeFuncionario}" required="true" requiredMessage="Campo obrigatório!"/>
+                                    <div class="input-group-append">
+                                        <h:commandLink id="novoFuncionario" class="btn btn-success fontAdjust" action="novoFuncionario" target="_blank">Novo</h:commandLink>
+                                    </div>
+                                </div>
+                                <div id="dropdownFuncionarios" class="dropdown-menu adjustDropdown">
+                                    <span id="buscando" class="fontAdjust d-none">Buscando...</span>
+                                    <h:panelGroup id="funcionarios">
+                                        <ui:repeat id="repeat" var="f" value="#{cadastroFuncionarioController.funcionariosEncontrados}" varStatus="status">
+                                            <h:outputLabel class="dropdown-item fontAdjust" onclick="selecionou(#{status.index})" value="#{status.index} | #{f.nome} | #{f.cpf}"/>
+                                        </ui:repeat>
+                                        <h:inputText id="selectedDummyInput" class="d-none" value="#{cadastroFuncionarioController.selectedIndex}"/>
+                                    </h:panelGroup>
+                                </div>
+                                <h:commandLink id="mostrarFuncionarios" class="d-none" action="#{cadastroFuncionarioController.mostrarFuncionarios()}">
+                                    <f:ajax execute="inputFuncionario" render="funcionarios"/>
+                                </h:commandLink>
+                                <h:commandLink id="limparFuncionarios" class="d-none" action="#{cadastroFuncionarioController.limparFuncionarios()}">
+                                    <f:ajax render="funcionarios"/>
+                                </h:commandLink>
+                                <h:commandLink id="selecionaFuncionario" class="d-none" onclick="hideBuscaFuncionarios()" action="#{cadastroFuncionarioController.selecionarFuncionario()}">
+                                    <f:ajax execute="selectedDummyInput" render="inputFuncionario" />
+                                </h:commandLink>
+                            </div>
+                            <div class="col-md-4 divPadding">
+                                <h:message id="m3" for="inputUsername" class="alert alert-danger fontAdjust adjustPadding"/>
+                            </div>
+                            
+                        </div>
+                    </h:form>
+                </div>
+            </div>
+            <script>
+                var temporizador;
+                function showDropdown(){
+                    if ($('#funcionarioForm\\:inputFuncionario').val() !== ""){
+                        if (!$('#dropdownFuncionarios').hasClass('show'))
+                            $('#dropdownFuncionarios').addClass('show');
+                        $('#buscando').removeClass('d-none');
+                        clearTimeout(temporizador);
+                        temporizador = setTimeout(doneTyping, 1000);
+                    }
+                    else{
+                        $('#dropdownFuncionarios').removeClass('show');
+                        $('#funcionarioForm\\:limparFuncionarios').click();
+                    }
+                }
+                function doneTyping(){
+                    $('#buscando').addClass('d-none');
+                    $('#funcionarioForm\\:mostrarFuncionarios').click();
+                }
+                
+                function hideBuscaFuncionarios(){
+                    $('#dropdownFuncionarios').removeClass('show');
+                }
+                
+                function selecionou(index){
+                    $('#funcionarioForm\\:selectedDummyInput').val(index);
+                    $('#funcionarioForm\\:selecionaFuncionario').click();
+                }
+            </script>
+        </ui:define>
+    </ui:composition>
+</html>
+

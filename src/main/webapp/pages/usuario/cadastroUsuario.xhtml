@@ -1,0 +1,303 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <ui:composition template="/resources/notallowed/template/layout.xhtml">
+
+        <ui:define name="title">Cadastro de usuário</ui:define>
+
+        <ui:define name="navbarTitle">Cadastro de usuário</ui:define>
+
+        <ui:define name="content">
+            <style>
+                .fontAdjust{
+                    font-size: 14px;
+                }
+                .adjustPadding{
+                    padding-top: 7.5px;
+                    padding-bottom: 7.5px;
+                    margin-bottom: 0px;
+                    display: block;
+                }
+                .adjustDropdown{
+                    margin-left: 15px;
+                    padding-left: 15px;
+                }
+                .divPadding{
+                    padding-bottom: 10px;
+                }
+                .buttonClass{
+                    cursor: pointer;
+                }
+                .buttonClass input:hover,.buttonClass input:active,.buttonClass input:focus {
+                    background: #43A047;
+                }
+
+                td label{
+                    font-size: 14px;
+                    margin-bottom: 0px;
+                }
+
+                .tableFormat{
+                    min-height: 100px;
+                    max-height: 300px;
+                    width: available;
+                    display: block;
+                }
+
+                .tableBodyFormat{
+                    width: available;
+                    overflow-y: scroll;
+                    display: block;
+                }
+            </style>
+            <div class="container">
+                <div class="row">
+                    <a id="linkCadastro" class="col-12 btn btn-secondary text-center" data-toggle="collapse" 
+                       href="#dadosUsuario" aria-expanded="false" aria-controls="dadosUsuario">
+                        Editar usuário: #{cadastroUsuarioController.usuario.username == null ? "novo usuário":cadastroUsuarioController.usuario.username}
+                    </a>
+
+                </div>
+                <div id="dadosUsuario" class="collapse show">
+                    <h:form id="usuarioForm">
+                        <div class="row bg-light" style="padding-top: 10px; padding-bottom: 10px;">
+                            <div class="col-md-4 divPadding">
+                                Id do usuário:
+                            </div>
+                            <div class="col-md-8 divPadding">
+                                #{cadastroUsuarioController.usuario.id == null ? "#" : cadastroUsuarioController.usuario.id}
+                            </div>
+                        </div>
+
+                        <div class="row bg-light" style="padding-top: 10px; padding-bottom: 10px;">
+                            <div class="col-md-4 divPadding">
+                                Nome de usuário:
+                            </div>
+                            <div class="col-md-4 divPadding">
+                                <h:inputText id="inputUsername" autocomplete="off" class="form-control fontAdjust" value="#{cadastroUsuarioController.usuario.username}" required="true" requiredMessage="Campo obrigatório!"/>
+                            </div>
+                            <div class="col-md-4 divPadding">
+                                <h:message id="m1" for="inputUsername" class="alert alert-danger fontAdjust adjustPadding"/>
+                            </div>
+                        </div>
+
+                        <div class="row bg-light" style="padding-top: 10px; padding-bottom: 10px;">
+                            <div class="col-md-4 divPadding">
+                                Senha:
+                            </div>
+                            <div class="col-md-4 divPadding">
+                                <h:inputSecret id="inputPassword" autocomplete="off" class="form-control fontAdjust" value="#{cadastroUsuarioController.usuario.password}" required="true" requiredMessage="Campo obrigatório!"/>
+                            </div>
+                            <div class="col-md-4 divPadding">
+                                <h:message id="m2" for="inputPassword" class="alert alert-danger fontAdjust adjustPadding"/>
+                            </div>
+                        </div>
+
+                        <div class="row bg-light" style="padding-top: 10px; padding-bottom: 10px;">
+                            <div class="col-md-4 divPadding">
+                                Funcionário:
+                            </div>
+                            <div class="col-md-4">
+                                <div class="input-group">
+                                    <h:inputText id="inputFuncionario" autocomplete="off" onkeyup="showDropdown()" class="form-control fontAdjust" value="#{cadastroUsuarioController.nomeFuncionario}" required="true" requiredMessage="Campo obrigatório!"/>
+                                    <div class="input-group-append">
+                                        <h:outputLink id="novoFuncionario" class="btn btn-success fontAdjust" value="/SistemaTransporte/pages/cadastro/funcionario.xhtml" target="_blank">Novo</h:outputLink>
+                                    </div>
+                                </div>
+                                <div id="dropdownFuncionarios" class="dropdown-menu adjustDropdown">
+                                    <span id="buscando" class="fontAdjust d-none">Buscando...</span>
+                                    <h:panelGroup id="funcionarios">
+                                        <ui:repeat id="repeatFuncionarios" var="f" value="#{cadastroUsuarioController.funcionariosEncontrados}" varStatus="status">
+                                            <h:commandButton style="padding-left: 0;padding-right: 0;" class="dropdown-item fontAdjust" onclick="hideBuscaFuncionarios()" action="#{cadastroUsuarioController.selecionarFuncionario(f)}" value="#{status.index} | #{f.nome} | #{f.cpf}">
+                                                <f:ajax render="usuarioForm:inputFuncionario" />
+                                            </h:commandButton>
+                                        </ui:repeat>
+                                    </h:panelGroup>
+                                </div>
+                                <h:commandLink id="mostrarFuncionarios" class="d-none" action="#{cadastroUsuarioController.mostrarFuncionarios()}">
+                                    <f:ajax execute="inputFuncionario" render="funcionarios"/>
+                                </h:commandLink>
+                                <h:commandLink id="limparFuncionarios" class="d-none" action="#{cadastroUsuarioController.limparFuncionarios()}">
+                                    <f:ajax render="funcionarios"/>
+                                </h:commandLink>
+                            </div>
+                            <div class="col-md-4 divPadding">
+                                <h:message id="m3" for="inputUsername" class="alert alert-danger fontAdjust adjustPadding"/>
+                            </div>
+                        </div>
+
+                        <div class="row bg-light" style="padding-top: 10px; padding-bottom: 10px;">
+                            <!-- Grupos de Permissões -->
+                            <div class="col-md-5 divPadding">
+                                <table class="table tableFormat">
+                                    <thead class="thead-light">
+                                        <tr>
+                                            <th scope="col">
+                                                <input id="selectAllGroups" type="checkbox" disabled="true" onchange="selecionouTodosOsGrupos()"/>
+                                                <h:commandLink id="selectAllGroupsCommandLink" class="d-none" action="#{cadastroUsuarioController.selecionarTodosOsGrupos(true)}">
+                                                    <f:ajax/>
+                                                </h:commandLink>
+                                                <h:commandLink id="unselectAllGroupsCommandLink" class="d-none" action="#{cadastroUsuarioController.selecionarTodosOsGrupos(false)}">
+                                                    <f:ajax/>
+                                                </h:commandLink>
+                                            </th>
+                                            <th scope="col">Grupos de Permissões</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="tableBodyFormat">
+                                        <ui:repeat id="repeatGroups" var="gp" varStatus="status" value="#{cadastroUsuarioController.gruposDePermissoes}">
+                                            <tr>
+                                                <th scope="row">
+                                                    <input id="selectGroup-#{status.index}" type="checkbox" class="groups" onchange="selecionouGrupo(#{status.index})"/>
+                                                    <h:commandLink id="selectGroupCommandLink" class="d-none" action="#{cadastroUsuarioController.selecionarGrupo(gp, true)}">
+                                                        <f:ajax/>
+                                                    </h:commandLink>
+                                                    <h:commandLink id="unselectGroupCommandLink" class="d-none" action="#{cadastroUsuarioController.selecionarGrupo(gp, false)}">
+                                                        <f:ajax/>
+                                                    </h:commandLink>
+                                                </th>
+                                                <td>${gp.descricao}</td>
+                                            </tr>
+                                        </ui:repeat>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <!-- Permissões -->
+                            <div class="col-md-7 divPadding">
+                                <table class="table tableFormat">
+                                    <thead class="thead-light">
+                                        <tr>
+                                            <th scope="col">
+                                                <input id="selectAllPermissions" type="checkbox" onchange="selecionouTodasAsPermissoes()"/>
+                                                <h:commandLink id="selectAllPermissionsCommandLink" class="d-none" action="#{cadastroUsuarioController.selecionarTodasAsPermissoes(true)}">
+                                                    <f:ajax/>
+                                                </h:commandLink>
+                                                <h:commandLink id="unselectAllPermissionsCommandLink" class="d-none" action="#{cadastroUsuarioController.selecionarTodasAsPermissoes(false)}">
+                                                    <f:ajax/>
+                                                </h:commandLink>
+                                            </th>
+                                            <th scope="col">Permissões</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="tableBodyFormat">
+                                        <ui:repeat id="repeatPermissoes" var="p" varStatus="status" value="#{cadastroUsuarioController.permissoes}">
+                                            <tr>
+                                                <th scope="row">
+                                                    <input id="selectPermission-#{status.index}" type="checkbox" class="permissions" onchange="selecionouPermissao(#{status.index})"/>
+                                                    <h:commandLink id="selectPermissionCommandLink" class="d-none" action="#{cadastroUsuarioController.selecionarPermissao(p, true)}">
+                                                        <f:ajax/>
+                                                    </h:commandLink>
+                                                    <h:commandLink id="unselectPermissionCommandLink" class="d-none" action="#{cadastroUsuarioController.selecionarPermissao(p, false)}">
+                                                        <f:ajax/>
+                                                    </h:commandLink>
+                                                </th>
+                                                <td>${p.descricao}</td>
+                                            </tr>
+                                        </ui:repeat>
+                                        <h:inputText id="selectedPermissionsInputText" class="d-none" value="#{cadastroUsuarioController.selectedPermissionsString}"/>
+                                        <h:commandLink id="checkPermissionsCommandLink" class="d-none" action="#{cadastroUsuarioController.getSelectedPermissions()}">
+                                            <f:ajax render="usuarioForm:selectedPermissionsInputText" execute="usuarioForm:selectedPermissionsInputText" onevent="checarPermissoes"/>
+                                        </h:commandLink>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </h:form>
+                </div>
+            </div>
+
+            <script>
+                var temporizador;
+                $(document).ready(function () {
+                });
+                function showDropdown() {
+                    if ($('#usuarioForm\\:inputFuncionario').val() !== "") {
+                        if (!$('#dropdownFuncionarios').hasClass('show'))
+                            $('#dropdownFuncionarios').addClass('show');
+                        $('#buscando').removeClass('d-none');
+                        clearTimeout(temporizador);
+                        temporizador = setTimeout(doneTyping, 1000);
+                    } else {
+                        $('#dropdownFuncionarios').removeClass('show');
+                        $('#usuarioForm\\:limparFuncionarios').click();
+                    }
+                }
+                function doneTyping() {
+                    $('#buscando').addClass('d-none');
+                    $('#usuarioForm\\:mostrarFuncionarios').click();
+                }
+
+                function hideBuscaFuncionarios() {
+                    $('#dropdownFuncionarios').removeClass('show');
+                }
+
+                function selecionouTodosOsGrupos() {
+                    var input = $('#selectAllGroups');
+                    if (input.prop('checked') === true) {
+                        $('#usuarioForm\\:selectAllGroupsCommandLink').click();
+                        $('.groups').prop('checked', true);
+                    } else {
+                        $('#usuarioForm\\:unselectAllGroupsCommandLink').click();
+                        $('.groups').prop('checked', false);
+                    }
+                }
+
+                function selecionouGrupo(i) {
+                    var input = $('#selectGroup-' + i);
+                    if (input.prop('checked') === true) {
+                        $('#usuarioForm\\:repeatGroups\\:' + i + '\\:selectGroupCommandLink').click();
+                    } else {
+                        $('#usuarioForm\\:repeatGroups\\:' + i + '\\:unselectGroupCommandLink').click();
+                    }
+                    var button = $('#usuarioForm\\:checkPermissionsCommandLink');
+                    button.click();
+                }
+
+                function selecionouTodasAsPermissoes() {
+                    var input = $('#selectAllPermissions');
+                    if (input.prop('checked') === true) {
+                        $('#usuarioForm\\:selectAllPermissionsCommandLink').click();
+                        $('.permissions').prop('checked', true);
+                    } else {
+                        $('#usuarioForm\\:unselectAllPermissionsCommandLink').click();
+                        $('.permissions').prop('checked', false);
+                    }
+                }
+
+                function selecionouPermissao(i) {
+                    var input = $('#selectPermission-' + i);
+                    if (input.prop('checked') === true) {
+                        $('#usuarioForm\\:repeatPermissions\\:' + i + '\\:selectPermissionCommandLink').click();
+                    } else {
+                        $('#usuarioForm\\:repeatPermissions\\:' + i + '\\:unselectPermissionCommandLink').click();
+                    }
+                }
+
+                function checarPermissoes(data) {
+                    //<![CDATA[
+                    var selectedPermissionsInputText = $('#usuarioForm\\:selectedPermissionsInputText');
+                    //var selectedPermissions = JSON.parse(JSON.stringify(selectedPermissionsInputText.val()));
+
+                    if (data.status === "success") {
+                        var json = selectedPermissionsInputText.val();
+                        var selectedPermissions = JSON.parse(json);
+                        console.log(selectedPermissions);
+                        for (i = 0; i < selectedPermissions.length; i++) {
+                            if (selectedPermissions[i]["pos"] == 1) {
+                                $('#selectPermission-' + i).prop('checked', true);
+                            } else {
+                                $('#selectPermission-' + i).prop('checked', false);
+                            }
+                        }
+                    }
+
+                    //]]>
+                }
+            </script>
+        </ui:define>
+    </ui:composition>
+</html>
+

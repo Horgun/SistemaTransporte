@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+    <ui:composition>
+        <style>
+            .myNavBar{
+                margin-bottom: 0;
+            }
+            .white{
+                color: white;
+            }
+            
+        </style>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark myNavBar fixed-top">
+            <a class="navbar-brand navbar-brand-color" href="/SistemaTransporte">Sistema de Gerenciamento</a>
+            <div class="navbar-text" href="#"><ui:insert name="navbarTitle"></ui:insert></div>
+            <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon bg-dark"></span>
+            </button>
+            
+            
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <div class="d-lg-none d-xl-none">
+                    <ui:include src="/resources/notallowed/template/sidemenu.xhtml"/>
+                </div>
+            </div>
+        </nav>
+    </ui:composition>
+</html>
