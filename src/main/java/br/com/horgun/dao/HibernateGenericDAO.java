@@ -57,19 +57,20 @@ public class HibernateGenericDAO<DbObject, Pk> implements IHibernateGenericRepos
     }
     
     @Override
-    public Transaction beginTransaction() throws Exception{
+    public Transaction beginTransaction(){
         if (currentSession != null){
             return currentSession.beginTransaction();
         }
-        throw new Exception("No open session!");
+        throw new RuntimeException("No open session!");
     }
     
     @Override
-    public void commitTransaction() throws Exception{
+    public void commitTransaction(){
         if (currentSession != null){
             currentSession.getTransaction().commit();
         }
-        throw new Exception("No open transaction!");
+        else
+            throw new RuntimeException("No open transaction!");
     }
     //</editor-fold>
     

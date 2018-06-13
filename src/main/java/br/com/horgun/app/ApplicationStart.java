@@ -5,18 +5,19 @@ import br.com.horgun.model.Funcionario;
 import br.com.horgun.model.GrupoPermissao;
 import br.com.horgun.model.Permissao;
 import br.com.horgun.model.Usuario;
+import br.com.horgun.repository.IFuncionarioDAO;
+import br.com.horgun.repository.IGrupoPermissaoDAO;
+import br.com.horgun.repository.IPermissaoDAO;
+import br.com.horgun.repository.IUsuarioDAO;
 import br.com.horgun.util.PasswordEncryption;
 import br.com.horgun.util.SaltGenerator;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import javax.annotation.PostConstruct;
-import javax.ejb.EJB;
-import javax.ejb.Singleton;
 import javax.ejb.Startup;
-import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import org.hibernate.Session;
+import javax.ejb.Singleton;
 import org.hibernate.SessionFactory;
 import org.hibernate.search.FullTextSession;
 import org.hibernate.search.Search;
@@ -32,13 +33,17 @@ import org.jboss.logging.Logger;
  *
  * @author savio
  */
+
 @Singleton
 @Startup
 public class ApplicationStart {
     private static Logger logger = Logger.getLogger(ApplicationStart.class);
     
-    @Inject
-    SessionFactory sessionFactory;
+    @Inject private SessionFactory sessionFactory;
+    @Inject private IUsuarioDAO usuarioDAO;
+    @Inject private IFuncionarioDAO funcionarioDAO;
+    @Inject private IPermissaoDAO permissaoDAO;
+    @Inject private IGrupoPermissaoDAO grupoPermissaoDAO;
 
     @PostConstruct
     public void start(){
@@ -60,6 +65,23 @@ public class ApplicationStart {
         }
     }
     
+    private void criaAdmin(){
+        logger.info("Criando admin...");
+        
+        Funcionario fAdmin = new Funcionario(null, "Administrador", "1", "", null, null);
+        
+        Usuario uAdmin = new Usuario();
+        uAdmin.setUsername("admin");
+        uAdmin.setSalt(SaltGenerator.getSalt());
+        uAdmin.setPassword(PasswordEncryption.getEncrytedPassword("admin", "123456", uAdmin.getSalt()));
+        uAdmin.setFuncionario(fAdmin);
+        
+        funcionarioDAO.save(fAdmin);
+        usuarioDAO.save(uAdmin);
+        
+        logger.info("Admin criado.");
+    }
+    
     private void criaPermissoes(){
         logger.info("Criando grupos de permissões...");
         List<GrupoPermissao> gruposDePermissoes = new ArrayList<>();
@@ -77,37 +99,17 @@ public class ApplicationStart {
         //atribuir permissoes
         gp1.setPermissoes(permissoes);
         
-        Session s = sessionFactory.getCurrentSession();
-        s.beginTransaction();
-        
+        permissaoDAO.openSession();
+        permissaoDAO.beginTransaction();
         for (Permissao permissao : permissoes) {
-            s.save(permissao);
+            permissaoDAO.save(permissao);
         }
+        permissaoDAO.commitTransaction();
+        permissaoDAO.closeSession();
         
-        s.save(gp1);
-        
-        s.getTransaction().commit();
+        grupoPermissaoDAO.save(gp1);
         
         logger.info("Permissões criadas.");
     }
     
-    private void criaAdmin(){
-        logger.info("Criando admin...");
-        Session s = sessionFactory.getCurrentSession();
-        
-        Funcionario fAdmin = new Funcionario(null, "Administrador", "1", "", null, null);
-        
-        Usuario uAdmin = new Usuario();
-        uAdmin.setUsername("admin");
-        uAdmin.setSalt(SaltGenerator.getSalt());
-        uAdmin.setPassword(PasswordEncryption.getEncrytedPassword("admin", "123456", uAdmin.getSalt()));
-        uAdmin.setFuncionario(fAdmin);
-        
-        s.beginTransaction();
-        s.save(fAdmin);
-        s.save(uAdmin);
-        
-        s.getTransaction().commit();
-        logger.info("Admin criado.");
-    }
 }

@@ -26,11 +26,10 @@ public class UsuarioDAO extends HibernateGenericDAO<Usuario, Long> implements IU
         boolean shouldCloseSession = standaloneSession();
         
         Transaction t = currentSession.beginTransaction();
-        Usuario u = currentSession.createQuery(
-                String.format("from Usuario u where u.username = ?", username
-                        .toLowerCase()), Usuario.class)
+        Usuario u = currentSession.createQuery("from Usuario u where u.username = :username", Usuario.class)
+                .setParameter("username", username.toLowerCase())
                 .uniqueResult();
-        
+        t.commit();
         if (shouldCloseSession) closeSession();
         
         return u;

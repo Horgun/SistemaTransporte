@@ -52,6 +52,10 @@
                     overflow-y: scroll;
                     display: block;
                 }
+                
+                .columnBackgroundFix{
+                    width: 100%;
+                }
             </style>
             <div class="container">
                 <div class="row">
@@ -144,7 +148,7 @@
                                                     <f:ajax/>
                                                 </h:commandLink>
                                             </th>
-                                            <th scope="col">Grupos de Permissões</th>
+                                            <th scope="col" class="columnBackgroundFix">Grupos de Permissões</th>
                                         </tr>
                                     </thead>
                                     <tbody class="tableBodyFormat">
@@ -179,7 +183,7 @@
                                                     <f:ajax/>
                                                 </h:commandLink>
                                             </th>
-                                            <th scope="col">Permissões</th>
+                                            <th scope="col" class="columnBackgroundFix">Permissões</th>
                                         </tr>
                                     </thead>
                                     <tbody class="tableBodyFormat">

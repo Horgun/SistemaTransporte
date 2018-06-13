@@ -18,8 +18,8 @@ public interface IHibernateGenericRepository<DbObject, Pk> extends IGenericRepos
     
     void openSession();
     void closeSession();
-    Transaction beginTransaction() throws Exception;
-    void commitTransaction() throws Exception;
+    Transaction beginTransaction();
+    void commitTransaction();
     
     List<DbObject> list(String query);
 }

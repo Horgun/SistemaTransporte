@@ -9,7 +9,9 @@ import br.com.horgun.model.Funcionario;
 import br.com.horgun.model.GrupoPermissao;
 import br.com.horgun.model.Permissao;
 import br.com.horgun.model.Usuario;
+import br.com.horgun.repository.IGrupoPermissaoDAO;
 import br.com.horgun.repository.IHibernateGenericRepository;
+import br.com.horgun.repository.IPermissaoDAO;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -45,6 +47,10 @@ public class CadastroUsuarioController implements Serializable {
     private Set<Permissao> permissoesSelecionadas;
     private List<GrupoPermissao> gruposSelecionados;
     private String selectedPermissionsString;
+    
+    @Inject private SessionFactory sessionFactory;
+    @Inject private IPermissaoDAO permissaoDAO;
+    @Inject private IGrupoPermissaoDAO grupoPermissaoDAO;
 
     @PostConstruct
     public void init() {
@@ -82,16 +88,15 @@ public class CadastroUsuarioController implements Serializable {
     }
 
     public void mostrarFuncionarios() {
-        //buscar no banco
         FullTextSession fts = Search.getFullTextSession(sessionFactory.getCurrentSession());
-        sessionFactory.getCurrentSession().beginTransaction();
+        fts.beginTransaction();
         QueryBuilder qb = fts.getSearchFactory().buildQueryBuilder().forEntity(Funcionario.class).get();
         org.apache.lucene.search.Query q = qb.keyword().fuzzy().onField("nome").matching(nomeFuncionario).createQuery();
         Query<Funcionario> hq = fts.createFullTextQuery(q, Funcionario.class);
         hq.setMaxResults(10);
         hq.setFirstResult(0);
         funcionariosEncontrados = new ArrayList<>(hq.list());
-        sessionFactory.getCurrentSession().getTransaction().commit();
+        fts.getTransaction().commit();
     }
 
     public void limparFuncionarios() {
@@ -115,15 +120,11 @@ public class CadastroUsuarioController implements Serializable {
     }
 
     private void carregarTodasAsPermissoes() {
-        Query<Permissao> q = sessionFactory.getCurrentSession().createQuery("from Permissao p");
-        permissoes = q.list();
+        permissoes = permissaoDAO.list();
     }
 
     private void carregarGruposDePermissoes() {
-        //sessionFactory.getCurrentSession().beginTransaction();
-        Query<GrupoPermissao> q = sessionFactory.getCurrentSession().createQuery("from GrupoPermissao gp");
-        gruposDePermissoes = q.list();
-        //sessionFactory.getCurrentSession().getTransaction().commit();
+        gruposDePermissoes = grupoPermissaoDAO.list();
     }
 
     public void selecionarTodosOsGrupos(boolean selecionar) {
@@ -189,7 +190,6 @@ public class CadastroUsuarioController implements Serializable {
         }
         positions += "]";
         selectedPermissionsString = positions;
-        System.out.println("debug: " + selectedPermissionsString);
     }
 
     public List<GrupoPermissao> getGruposDePermissoes() {
